@@ -56,6 +56,13 @@ SHORTCUTS = {
     "kt": "keys test",
     "kd": "keys delete",
 
+    # Sentinel shortcuts (sn prefix to avoid conflict with subs)
+    "snst": "sentinel start",
+    "snss": "sentinel status",
+    "snsp": "sentinel stop",
+    "snbr": "sentinel bridge",
+    "snlg": "sentinel logs",
+
     "?": "help",
     "h": "help",
     "q": "exit",

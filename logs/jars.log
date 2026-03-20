@@ -12431,3 +12431,12 @@ application.utilities.exceptions.DatabaseError: Database error: Failed to retrie
 2026-01-28 13:56:56 - application.routers.users - INFO - [users.py:28] - User 307a1d48-9f7f-43c4-923b-3808ad967e2a requesting basic profile from 127.0.0.1
 2026-01-28 13:57:03 - application.routers.keys - INFO - [keys.py:86] - [KEY] Returned 0 keys for user 307a1d48-9f7f-43c4-923b-3808ad967e2a
 2026-01-28 13:57:34 - application.routers.users - INFO - [users.py:28] - User 307a1d48-9f7f-43c4-923b-3808ad967e2a requesting basic profile from 127.0.0.1
+2026-01-28 22:52:47 - application.routers.auth - INFO - [auth.py:148] - [LOGIN] Login attempt | Email: divineuzoukwu3@gmail.com | IP: 127.0.0.1
+2026-01-28 22:52:47 - application.services.auth_service - INFO - [auth_service.py:22] - [AUTH] Login attempt for email: divineuzoukwu3@gmail.com
+2026-01-28 22:52:49 - application.services.auth_service - INFO - [auth_service.py:57] - [AUTH SUCCESS] User 307a1d48-9f7f-43c4-923b-3808ad967e2a (divineuzoukwu3@gmail.com) logged in successfully
+2026-01-28 22:52:49 - application.routers.auth - INFO - [auth.py:187] - [LOGIN SUCCESS] User authenticated | ID: 307a1d48-9f7f-43c4-923b-3808ad967e2a | Email: divineuzoukwu3@gmail.com | IP: 127.0.0.1
+2026-01-28 22:52:50 - application.routers.users - INFO - [users.py:28] - User 307a1d48-9f7f-43c4-923b-3808ad967e2a requesting basic profile from 127.0.0.1
+2026-01-28 22:53:01 - application.routers.users - INFO - [users.py:28] - User 307a1d48-9f7f-43c4-923b-3808ad967e2a requesting basic profile from 127.0.0.1
+2026-01-28 22:53:15 - application.services.ledger_service - WARNING - [ledger_service.py:59] - [LEDGER] No active wallet found for user 307a1d48-9f7f-43c4-923b-3808ad967e2a
+2026-01-28 22:53:15 - application.routers.wallet - WARNING - [wallet.py:33] - [WALLET] No wallet found | User: 307a1d48-9f7f-43c4-923b-3808ad967e2a
+2026-01-28 22:53:21 - application.services.er_cnvrt_service - WARNING - [er_cnvrt_service.py:30] - [RATE] No rate in DB, using fallback

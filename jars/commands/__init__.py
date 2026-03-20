@@ -5,6 +5,7 @@ from .traders import app as traders_app
 from .subs import app as subs_app
 from .keys import app as keys_app
 from .payments import app as payments_app
+from .sentinel import app as sentinel_app
 
 __all__ = [
     "auth_app", 
@@ -13,5 +14,7 @@ __all__ = [
     "traders_app", 
     "subs_app", 
     "keys_app",
-    "payments_app"
+    "payments_app",
+    "sentinel_app"
 ]
+

@@ -8,7 +8,7 @@ import pyfiglet
 
 from .config import Theme
 from .client import client
-from .commands import auth_app, user_app, wallet_app, traders_app, subs_app, keys_app, payments_app
+from .commands import auth_app, user_app, wallet_app, traders_app, subs_app, keys_app, payments_app, sentinel_app
 
 app = typer.Typer(
     name="jars",
@@ -25,6 +25,7 @@ app.add_typer(traders_app, name="traders")
 app.add_typer(subs_app, name="subs")
 app.add_typer(keys_app, name="keys")
 app.add_typer(payments_app, name="payments")
+app.add_typer(sentinel_app, name="sentinel")
 
 
 def render_splash():

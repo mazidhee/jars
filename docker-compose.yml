@@ -101,6 +101,31 @@ services:
       timeout: 5s
       retries: 5
 
+  # ===========================================
+  # SENTINEL - C++ Market Data Listener
+  # ===========================================
+  # Connects to Bybit WebSocket and publishes
+  # trade data to Redis for Python services.
+  # 
+  # Build: docker-compose build sentinel
+  # Start: docker-compose up sentinel
+  # ===========================================
+  sentinel:
+    build:
+      context: ./sentinel
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      BYBIT_WS_URL: ${BYBIT_WS_URL:-wss://stream-testnet.bybit.com/v5/public/linear}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      redis:
+        condition: service_healthy
+    # Use host network for lower latency (optional)
+    # network_mode: host
+
 
 volumes:
   pgdata:

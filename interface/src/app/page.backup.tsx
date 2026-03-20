@@ -46,8 +46,6 @@ import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 import WorldMap from "@/components/ui/world-map";
 import { TerminalDemo } from "@/components/terminal-demo";
-import { TabsDemo } from "@/components/tabs-demo";
-import { CopyButton } from "@/components/ui/copy-button";
 
 const World = dynamic(() => import("@/components/ui/globe").then((m) => m.World), {
   ssr: false,
@@ -1083,19 +1081,9 @@ function TradersSection() {
           </Link>
 
           {/* Disclaimer under CTA */}
-          {/* CLI Command Box */}
-          <div className="max-w-md mx-auto mb-12">
-            <div className="flex items-center justify-between gap-4 px-5 py-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/50 transition-colors group cursor-pointer">
-              <div className="flex items-center gap-3 font-mono text-sm text-white/70 overflow-hidden">
-                <span className="text-emerald-500 font-bold">$</span>
-                <span className="truncate">subs follow --alias 'AlphaTrader'</span>
-              </div>
-              <CopyButton text="subs follow --alias 'AlphaTrader'" />
-            </div>
-            <p className="mt-2 text-[10px] text-white/20 text-center font-mono">
-              Click to copy command
-            </p>
-          </div>
+          <p className="text-[9px] text-white/10 uppercase tracking-widest font-mono max-w-lg mx-auto mb-12">
+            Trading digital assets involves significant risk. Capital at risk.
+          </p>
         </motion.div>
 
         <div className="mt-8 border-t border-white/5 pt-8 pb-4">
@@ -1520,7 +1508,16 @@ export default function LandingPage() {
                 <span className="font-mono text-white text-sm">pipx install jars-cli</span>
               </div>
               <div className="h-6 w-px bg-white/10 mx-1" />
-              <CopyButton text="pipx install jars-cli" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10 rounded-lg"
+                onClick={() => {
+                  navigator.clipboard.writeText("pipx install jars-cli");
+                }}
+              >
+                <Copy className="w-3.5 h-3.5" />
+              </Button>
             </div>
 
             <span className="text-sm text-white/30 hidden sm:inline-block">or</span>
@@ -1585,8 +1582,8 @@ export default function LandingPage() {
       </section>
 
       <InfrastructureSection />
-      <TabsDemo />
       <TradersSection />
+      <LuminousStreamPipeline />
       <PricingSection />
       <FAQSection />
 

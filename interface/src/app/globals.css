@@ -161,6 +161,18 @@ input:-webkit-autofill:active {
   caret-color: hsl(var(--foreground)) !important;
 }
 
+/* Utility to hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
 /* Theme inline */
 @theme inline {
   --color-background: hsl(var(--background));
