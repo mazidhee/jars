@@ -60,8 +60,8 @@ SHORTCUTS = {
     "snst": "sentinel start",
     "snss": "sentinel status",
     "snsp": "sentinel stop",
-    "snbr": "sentinel bridge",
     "snlg": "sentinel logs",
+    "snmo": "sentinel monitor",
 
     "?": "help",
     "h": "help",

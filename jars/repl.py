@@ -16,7 +16,7 @@ import pyfiglet
 from .config import Theme
 from .client import client, JarsApiError
 from .session import session
-from .commands import auth_app, user_app, wallet_app, traders_app, subs_app, keys_app, payments_app
+from .commands import auth_app, user_app, wallet_app, traders_app, subs_app, keys_app, payments_app, sentinel_app
 
 console = Console()
 
@@ -237,7 +237,8 @@ def dispatch_command(cmd_input: str):
             _handle_typer_group(keys_app, args)
         elif cmd == "payments":
             _handle_typer_group(payments_app, args)
-            
+        elif cmd == "sentinel":
+            _handle_typer_group(sentinel_app, args)
         elif cmd == "login":
              _handle_typer_group(auth_app, ["login"] + args)
         elif cmd == "register":
@@ -291,6 +292,17 @@ async def run_repl():
     
     if should_login:
         dispatch_command("auth login")
+        # Try to load token again after login attempt
+        if client.load_token():
+            is_logged_in = True
+            
+    if is_logged_in:
+        try:
+            from .commands.sentinel import start as start_sentinel
+            console.print(f"[{Theme.MUTED}]Initializing background modules...[/]")
+            start_sentinel()
+        except Exception as e:
+            console.print(f"[{Theme.ERROR}]Failed to boot background systems:[/] {e}")
 
     prompt_session = PromptSession(style=style)
 
