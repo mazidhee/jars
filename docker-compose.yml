@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15-alpine
+    image: timescale/timescaledb:latest-pg15
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DATABASE_USER}
@@ -70,6 +70,7 @@ services:
       BYBIT_API_KEY: ${BYBIT_API_KEY}
       BYBIT_API_SECRET: ${BYBIT_API_SECRET}
       BYBIT_WS_URL: ${BYBIT_WS_URL:-wss://stream.bybit.com/v5/private}
+      TRADER_PROFILE_ID: ${TRADER_PROFILE_ID:-}
     depends_on:
       redis:
         condition: service_healthy
@@ -101,8 +102,28 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
 
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: "5432"
+      KAFKA_BROKER: kafka:29092
+      KAFKA_TOPIC: market.trades
+      KAFKA_DLQ_TOPIC: market.trades.dlq
+      KAFKA_GROUP: jars-worker-group
+      SECRET_KEY: ${SECRET_KEY}
+      BYBIT_BASE_URL: ${BYBIT_BASE_URL:-https://api-testnet.bybit.com}
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
 volumes:
   kafka_data:
   pgdata:
-
-
