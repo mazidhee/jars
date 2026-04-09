@@ -191,7 +191,6 @@ def task_send_trade_notification(self, email: str, trade_data: dict):
     except Exception as exc:
         logger.error(f"[EMAIL FAILED] Could not send trade notification to {email} | Error: {exc}")
         raise self.retry(exc=exc)
-        raise self.retry(exc=exc)
 
 @shared_task(
     bind=True,
@@ -248,3 +247,90 @@ def task_fetch_and_store_rate(self, base: str = None, quote: str = None):
         db.close()
 
 
+@shared_task(
+    bind=True,
+    max_retries=2,
+    default_retry_delay=120,
+)
+def task_calculate_trader_metrics(self):
+    import math
+    from decimal import Decimal
+    from datetime import datetime, timezone, timedelta
+    from sqlalchemy import select, func, case, and_
+
+    from application.models.trader_profile import TraderProfile
+    from application.models.trade import Trade
+    from application.models.signal import Signal
+    from application.models.enums import TraderProfileStatus
+
+    logger.info("[METRICS] Starting daily metric calculation for all active traders")
+
+    db = SessionLocal()
+    try:
+        profiles = db.execute(
+            select(TraderProfile).filter(
+                TraderProfile.is_active == True,
+                TraderProfile.status == TraderProfileStatus.ACTIVE,
+            )
+        ).scalars().all()
+
+        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+
+        for profile in profiles:
+            trades = db.execute(
+                select(Trade).join(Signal, Trade.signal_id == Signal.id).filter(
+                    Signal.leader_profile_id == profile.id,
+                    Trade.created_at >= cutoff,
+                    Trade.status.in_(["filled", "partially_filled"]),
+                )
+            ).scalars().all()
+
+            total = len(trades)
+            if total == 0:
+                profile.stats_snapshot = {
+                    "roi_30d": 0.0,
+                    "win_rate": 0.0,
+                    "sharpe_ratio": 0.0,
+                    "total_trades_30d": 0,
+                    "calculated_at": datetime.now(timezone.utc).isoformat(),
+                }
+                continue
+
+            wins = sum(1 for t in trades if t.realized_pnl and t.realized_pnl > 0)
+            win_rate = (wins / total) * 100.0
+
+            pnls = [float(t.realized_pnl or 0) for t in trades]
+            total_pnl = sum(pnls)
+
+            mean_return = total_pnl / total if total > 0 else 0.0
+            variance = sum((p - mean_return) ** 2 for p in pnls) / max(total - 1, 1)
+            std_dev = math.sqrt(variance) if variance > 0 else 0.0
+            sharpe = (mean_return / std_dev) if std_dev > 0 else 0.0
+
+            profile.win_rate = round(win_rate, 2)
+            profile.total_roi = round(total_pnl, 2)
+            profile.stats_snapshot = {
+                "roi_30d": round(total_pnl, 8),
+                "win_rate": round(win_rate, 2),
+                "sharpe_ratio": round(sharpe, 4),
+                "total_trades_30d": total,
+                "winning_trades": wins,
+                "losing_trades": total - wins,
+                "calculated_at": datetime.now(timezone.utc).isoformat(),
+            }
+
+            logger.info(
+                "[METRICS] %s | trades=%d win_rate=%.1f%% roi=%.2f sharpe=%.4f",
+                profile.alias, total, win_rate, total_pnl, sharpe,
+            )
+
+        db.commit()
+        logger.info("[METRICS] Calculation complete for %d traders", len(profiles))
+        return {"traders_processed": len(profiles)}
+
+    except Exception as exc:
+        db.rollback()
+        logger.error("[METRICS FAILED] %s", exc)
+        raise self.retry(exc=exc)
+    finally:
+        db.close()

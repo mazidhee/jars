@@ -165,6 +165,35 @@ async def get_trader_profile(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trader profile not found")
 
 
+@router.get("/{trader_id}/metrics")
+async def get_trader_metrics(
+    trader_id: uuid.UUID,
+    request: Request,
+    db: AsyncSession = Depends(get_read_db),
+):
+    ip_address = request.client.host if request and request.client else "unknown"
+
+    try:
+        trader = await TraderProfileService.get_trader_profile(db, trader_id)
+    except es.TraderProfileNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trader profile not found")
+
+    snapshot = trader.stats_snapshot or {}
+
+    return {
+        "trader_id": str(trader.id),
+        "alias": trader.alias,
+        "roi_30d": snapshot.get("roi_30d", 0.0),
+        "win_rate": snapshot.get("win_rate", 0.0),
+        "sharpe_ratio": snapshot.get("sharpe_ratio", 0.0),
+        "total_trades_30d": snapshot.get("total_trades_30d", 0),
+        "winning_trades": snapshot.get("winning_trades", 0),
+        "losing_trades": snapshot.get("losing_trades", 0),
+        "risk_score": trader.risk_score or 0.0,
+        "calculated_at": snapshot.get("calculated_at"),
+    }
+
+
 @router.get("", response_model=List[tp.TraderProfileResponse])
 async def list_active_traders(
     request: Request,

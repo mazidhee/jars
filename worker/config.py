@@ -1,4 +1,5 @@
 import os
+import sys
 import base64
 from dotenv import load_dotenv
 
@@ -20,13 +21,20 @@ DATABASE_URL = (
 )
 
 SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    print("FATAL: SECRET_KEY is not set. Worker cannot decrypt API secrets.", file=sys.stderr)
+    sys.exit(1)
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 
 BYBIT_BASE_URL = os.getenv("BYBIT_BASE_URL", "https://api-testnet.bybit.com")
 
 BUFFER_MAX_SIZE = int(os.getenv("WORKER_BUFFER_MAX_SIZE", "500"))
 BUFFER_FLUSH_INTERVAL = float(os.getenv("WORKER_BUFFER_FLUSH_INTERVAL", "1.0"))
 MAX_CONCURRENT_EXECUTIONS = int(os.getenv("MAX_CONCURRENT_TRADES", "100"))
-MAX_ACCEPTABLE_SLIPPAGE = float(os.getenv("MAX_ACCEPTABLE_SLIPPAGE", "0.5"))
+
+BALANCE_LOCK_TTL = int(os.getenv("BALANCE_LOCK_TTL", "10"))
+
 
 def get_fernet_key() -> bytes:
     raw = SECRET_KEY[:32].encode().ljust(32, b'\0')

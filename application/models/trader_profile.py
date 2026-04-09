@@ -63,4 +63,5 @@ class TraderProfile(Base):
     user = relationship("User", back_populates="trader_profile")
     subscriptions = relationship("Subscription", back_populates="trader_profile")
     signals = relationship("Signal", back_populates="trader_profile")
+    updates = relationship("TraderUpdate", back_populates="trader_profile", order_by="TraderUpdate.created_at.desc()")
 

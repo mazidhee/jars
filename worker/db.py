@@ -1,10 +1,12 @@
 import logging
 from typing import List, Optional
+
+import redis.asyncio as aioredis
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import text
 from cryptography.fernet import Fernet
 
-from worker.config import DATABASE_URL, get_fernet_key
+from worker.config import DATABASE_URL, REDIS_URL, BALANCE_LOCK_TTL, get_fernet_key
 
 logger = logging.getLogger("worker.db")
 
@@ -16,6 +18,29 @@ engine = create_async_engine(
     pool_recycle=1800,
 )
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+_redis: Optional[aioredis.Redis] = None
+
+
+async def get_redis() -> aioredis.Redis:
+    global _redis
+    if _redis is None:
+        _redis = aioredis.from_url(REDIS_URL, decode_responses=False)
+    return _redis
+
+
+async def acquire_user_lock(subscriber_id: str) -> bool:
+    r = await get_redis()
+    key = f"worker:lock:{subscriber_id}"
+    acquired = await r.set(key, "1", nx=True, ex=BALANCE_LOCK_TTL)
+    return bool(acquired)
+
+
+async def release_user_lock(subscriber_id: str) -> None:
+    r = await get_redis()
+    key = f"worker:lock:{subscriber_id}"
+    await r.delete(key)
+
 
 FETCH_ACTIVE_FOLLOWERS_SQL = text("""
     SELECT

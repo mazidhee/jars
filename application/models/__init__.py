@@ -16,6 +16,7 @@ from .signal import Signal
 from .trade import Trade
 from .ledger import LedgerEntry
 from .domain_events import DomainEvent, EventType, AggregateType
+from .trader_updates import TraderUpdate, UpdateVisibility
 
 __all__ = [
     "Base",
@@ -38,5 +39,7 @@ __all__ = [
     "Signal",
     "Trade",
     "LedgerEntry",
+    "TraderUpdate",
+    "UpdateVisibility",
 ]
 

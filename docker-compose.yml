@@ -118,8 +118,11 @@ services:
       KAFKA_GROUP: jars-worker-group
       SECRET_KEY: ${SECRET_KEY}
       BYBIT_BASE_URL: ${BYBIT_BASE_URL:-https://api-testnet.bybit.com}
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       kafka:
         condition: service_healthy
