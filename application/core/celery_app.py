@@ -25,6 +25,10 @@ celery_app.conf.update(
             'task': 'application.core.tasks.task_fetch_and_store_rate',
             'schedule': 3600.0,
         },
+        'calculate-trader-metrics-daily': {
+            'task': 'application.core.tasks.task_calculate_trader_metrics',
+            'schedule': 86400.0,
+        },
     },
 )
 

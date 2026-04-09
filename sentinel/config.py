@@ -11,6 +11,7 @@ SIGNAL_CHANNEL: str = os.getenv("SIGNAL_CHANNEL", "jars:signals")
 
 BYBIT_API_KEY: str = os.getenv("BYBIT_API_KEY", "")
 BYBIT_API_SECRET: str = os.getenv("BYBIT_API_SECRET", "")
+TRADER_PROFILE_ID: str = os.getenv("TRADER_PROFILE_ID", "")
 BYBIT_WS_URL: str = os.getenv("BYBIT_WS_URL", "wss://stream.bybit.com/v5/private")
 BYBIT_WS_PING_INTERVAL: int = int(os.getenv("BYBIT_WS_PING_INTERVAL", "20"))
 

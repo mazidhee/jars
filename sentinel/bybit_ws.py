@@ -24,6 +24,7 @@ from sentinel.config import (
     RECONNECT_BASE_DELAY,
     RECONNECT_MAX_DELAY,
     RECONNECT_MAX_ATTEMPTS,
+    TRADER_PROFILE_ID,
 )
 from sentinel.models import Signal, OrderWebsocketMessage
 from sentinel.broker import Broker
@@ -150,6 +151,8 @@ class BybitWSClient:
                 continue
 
             signal_dict = signal.model_dump()
+            if TRADER_PROFILE_ID:
+                signal_dict["trader_profile_id"] = TRADER_PROFILE_ID
             await self._broker.publish_signal(signal_dict)
             logger.info(
                 "Signal dispatched: %s %s %s @ %s",
