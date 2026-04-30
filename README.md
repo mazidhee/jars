@@ -1,6 +1,4 @@
-*Note: This project focused on building an asynchronous data pipeline. The core architecture developed here has since evolved into a separate open-source blockchain data lakehouse called evm-iceberg.*
-
-jars is a distributed stream-processing engine built to figure out how to handle high-frequency WebSocket data without dropping packets. To test the infra in a real world scenario, a standard SaaS business layer for cex copy-trading (handling user auth, routing, and balances) was built on top of it. The main goal of this project was to learn how to manage distributed task queues and prevent race conditions during concurrent state updates using Python, Redis, and Kafka.
+jars is a distributed stream-processing engine I built to figure out how to handle high-frequency WebSocket data without dropping packets. To test the infra in a real world scenario, a standard SaaS business layer for cex copy-trading (handling user auth, routing, and balances) was built on top of it. The main goal of this project was to learn how to manage distributed task queues and prevent race conditions during concurrent state updates using Python, Redis, and Kafka.
 
 ### Run Locally
 
